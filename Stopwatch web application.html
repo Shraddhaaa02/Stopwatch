@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="stopwatch">
+        <div id="display">00:00:00</div>
+        <button id="startStopButton" onclick="startStop()">Start</button>
+        <button onclick="reset()">Reset</button>
+        <button onclick="lap()">Lap</button>
+        <ul id="laps"></ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+<style class="css">
+.stopwatch {
+    text-align: center;
+    margin-top: 50px;
+}
+
+#display {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+#laps {
+    list-style-type: none;
+    padding: 0;
+}
+
+#laps li {
+    margin-bottom: 5px;
+}
+</style>
+<script class="js">
+    let timer;
+let isRunning = false;
+let startTime;
+let lapCounter = 1;
+
+function startStop() {
+    if (isRunning) {
+        clearInterval(timer);
+        document.getElementById("startStopButton").textContent = "Start";
+        isRunning = false;
+    } else {
+        startTime = Date.now() - (lapCounter === 1 ? 0 : lapCounter * 1000);
+        timer = setInterval(updateDisplay, 1000);
+        document.getElementById("startStopButton").textContent = "Stop";
+        isRunning = true;
+    }
+}
+
+function updateDisplay() {
+    const elapsedTime = Date.now() - startTime;
+    const formattedTime = formatTime(elapsedTime);
+    document.getElementById("display").textContent = formattedTime;
+}
+
+function reset() {
+    clearInterval(timer);
+    document.getElementById("display").textContent = "00:00:00";
+    document.getElementById("startStopButton").textContent = "Start";
+    isRunning = false;
+    lapCounter = 1;
+    document.getElementById("laps").innerHTML = "";
+}
+
+function formatTime(milliseconds) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+    const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+    const millis = Math.floor((milliseconds % 1000) / 10).toString().padStart(2, "0");
+    return `${minutes}:${seconds}:${millis}`;
+}
+
+function lap() {
+    const lapTime = document.getElementById("display").textContent;
+    const lapItem = document.createElement("li");
+    lapItem.textContent = `Lap ${lapCounter}: ${lapTime}`;
+    document.getElementById("laps").appendChild(lapItem);
+    lapCounter++;
+}
+</script>
